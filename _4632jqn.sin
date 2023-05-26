@@ -1,0 +1,315 @@
+ >>ORIGINAL RUN                           MAY 26, 2023        
+   9:47:34 P.M.                           FRIDAY      
+   INPUT FILE: _4632jqn.inm
+   RUN ID : _4632jqn
+          1    ;
+          2    ;Input file created by Aspen Plus Rel. 39.0 at 21:47:33 Fri May 26, 2023
+          3    ;Directory c:\Users\chldu\Documents\GitHub\TeamEnv  Runid MEA_EX
+          4    ;
+          5
+          6
+          7    DYNAMICS
+          8        DYNAMICS RESULTS=ON
+          9
+         10    IN-UNITS MET PRESSURE=bar TEMPERATURE=C DELTA-T=C PDROP=bar  &
+         11            INVERSE-PRES='1/bar' SHORT-LENGTH=mm
+         12
+         13    DEF-STREAMS CONVEN ALL
+         14
+         15    SIM-OPTIONS MASS-BAL-CHE=YES FLASH-TOL=1E-05 PARADIGM=SM  &
+         16            GAMUS-BASIS=AQUEOUS GHG-STANDARD=USEPA-2009  &
+         17            CARBON-FEE=.0510000000
+         18
+         19    MODEL-OPTION
+         20
+         21    DATABANKS 'APESV121 ACIDGAS' / 'APV121 PURE39' /  &
+         22            'APV121 AQUEOUS' / 'APV121 SOLIDS' / 'APV121 INORGANIC' &
+         23             / 'APESV121 AP-EOS' / 'NISTV121 NIST-TRC' / NOASPENPCD
+         24
+         25    PROP-SOURCES 'APESV121 ACIDGAS' / 'APV121 PURE39' /  &
+         26            'APV121 AQUEOUS' / 'APV121 SOLIDS' / 'APV121 INORGANIC' &
+         27             / 'APESV121 AP-EOS' / 'NISTV121 NIST-TRC'
+         28
+         29    COMPONENTS
+         30        MEA C2H7NO /
+         31        H2O H2O /
+         32        CO2 CO2 /
+         33        H2S H2S /
+         34        O2 O2 /
+         35        N2 N2 /
+         36        MEA+ C2H8NO+ /
+         37        MEACOO- C3H6NO3- /
+         38        HCO3- HCO3- /
+         39        CO3-2 CO3-2 /
+         40        HS- HS- /
+         41        S-2 S-2 /
+         42        H3O+ H3O+ /
+         43        OH- OH-
+         44
+         45    HENRY-COMPS HC-1 CO2 H2S O2 N2
+         46
+         47    SOLVE
+         48        RUN-MODE MODE=SIM
+         49
+         50    CHEMISTRY MEA-CHEM
+         51        STOIC 1 H2O -2. / H3O+ 1. / OH- 1.
+         52        STOIC 2 CO2 -1. / H2O -2. / HCO3- 1. / H3O+ 1.
+         53        STOIC 3 HCO3- -1. / H2O -1. / CO3-2 1. / H3O+ 1.
+         54        STOIC 4 H2S -1. / H2O -1. / HS- 1. / H3O+ 1.
+         55        STOIC 5 HS- -1. / H2O -1. / S-2 1. / H3O+ 1.
+         56        STOIC 6 MEA+ -1. / H2O -1. / MEA 1. / H3O+ 1.
+         57        STOIC 7 MEA -1. / HCO3- -1. / MEACOO- 1. / H2O 1.
+         58
+         59    FLOWSHEET
+         60        BLOCK ABSORBER IN=WATER FLUEGAS LEANSOLV OUT=CLEANGAS  &
+         61            RICHSOL1
+         62        BLOCK PUMP IN=RICHSOL1 OUT=RICHSOL2
+         63        BLOCK STRIPPER IN=RICHSOL3 OUT=CO2 H2O BOTTOM1
+         64        BLOCK HX2 IN=BOTTOM1 Q OUT=BOTTOM2
+         65        BLOCK HX1 IN=RICHSOL2 OUT=RICHSOL3 Q
+         66        BLOCK MIX IN=BOTTOM2 WATERMU MEAMU OUT=MIXED
+         67        BLOCK PUMP2 IN=H2O OUT=WATER
+         68        BLOCK COOLER IN=PUMPED OUT=COOLED
+         69        BLOCK PMUP1 IN=MIXED OUT=PUMPED
+         70        BLOCK CHARGBAL IN=COOLED OUT=LEANSOLV
+         71
+         72    PROPERTIES ENRTL-RK HENRY-COMPS=HC-1 CHEMISTRY=MEA-CHEM
+         73
+         74    PROP-REPLACE ENRTL-RK ENRTL-RK
+         75        MODEL ESPRSTD
+         76        MODEL ESPRSTD0
+         77        MODEL VAQCLK 1 1
+         78        MODEL MUL2JONS 1 1 1 2
+         79        MODEL DV1DKK 1 1
+         80        MODEL SIG2ONSG 1 -9 1
+         81        MODEL DL0NST 1 1
+         82
+         83    STREAM FLUEGAS
+         84        SUBSTREAM MIXED TEMP=50.00000000 PRES=1.080000000  &
+         85            MASS-FLOW=6.00000000E+5
+         86        MOLE-FRAC H2O 0.115 / CO2 0.141 / O2 0.025 / N2 0.719
+         87
+         88    STREAM LEANSOLV
+         89        SUBSTREAM MIXED TEMP=37.00000000 PRES=1.080000000  &
+         90            MASS-FLOW=1.60000000E+6
+         91        MASS-FRAC MEA 0.3 / H2O 0.675 / CO2 0.025
+         92
+         93    STREAM MEAMU
+         94        SUBSTREAM MIXED TEMP=20.00000000 PRES=1.050000000  &
+         95            MOLE-FLOW=2.
+         96        MOLE-FRAC MEA 1.
+         97
+         98    STREAM WATER
+         99        SUBSTREAM MIXED TEMP=40.00000000 PRES=1.080000000  &
+        100            MASS-FLOW=20000.00000
+        101        MASS-FRAC H2O 1.
+        102
+        103    STREAM WATERMU
+        104        SUBSTREAM MIXED TEMP=20.00000000 PRES=1.050000000  &
+        105            MOLE-FLOW=1.000000000
+        106        MOLE-FRAC H2O 1.
+        107
+        108    DEF-STREAMS HEAT Q
+        109
+        110    BLOCK MIX MIXER
+        111        PARAM
+        112
+        113    BLOCK COOLER HEATER
+        114        PARAM TEMP=37.00000000 PRES=1.080000000 DPPARMOPT=NO
+        115
+        116    BLOCK HX1 HEATER
+        117        PARAM TEMP=80.00000000 PRES=1.050000000 DPPARMOPT=NO
+        118
+        119    BLOCK HX2 HEATER
+        120        PARAM PRES=1.050000000 DPPARMOPT=NO
+        121
+        122    BLOCK ABSORBER RADFRAC
+        123        SUBOBJECTS INTERNALS = CS-1 CS-2
+        124        PARAM NSTAGE=30 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=100  &
+        125            TOLOL=1E-05 DAMPING=NONE
+        126        PARAM2 STATIC-DP=YES OLD-SULZER=NO
+        127        COL-CONFIG CONDENSER=NONE REBOILER=NONE CA-CONFIG=INT-1
+        128        RATESEP-ENAB CALC-MODE=RIG-RATE
+        129        RATESEP-PARA RS-MAXIT=50 FSTG-MIXED=NO
+        130        FEEDS WATER 1 / FLUEGAS 30 ON-STAGE / LEANSOLV 6
+        131        PRODUCTS CLEANGAS 1 V / RICHSOL1 30 L
+        132        P-SPEC 1 1.000000000
+        133        COL-SPECS DP-COL=.0500000000
+        134        REAC-STAGES 1 30 R-ABS
+        135        HOLD-UP 1 30 VOL-LHLDP=1.000000000
+        136        T-EST 1 65.00000000 / 30 55.00000000
+        137        PROPERTIES ENRTL-RK HENRY-COMPS=HC-1 CHEMISTRY=MEA-CHEM  &
+        138            FREE-WATER=STEAM-TA SOLU-WATER=3 TRUE-COMPS=YES
+        139        REPORT NOHYDRAULIC
+        140        INTERNALS CS-1 STAGE1=1 STAGE2=5 INTERNAL=PACKING  &
+        141            SIZING=RATING RATE-BASE=YES P-UPDATE=NO DIAM=6.500000000  &
+        142            LIQ-FILM=DISCRXN VAP-FILM=FILM PACKTYPE=MELLAPAK  &
+        143            VENDOR=SULZER PACK-MAT=STANDARD PACK-SIZE="250Y"  &
+        144            MTRFC-CORP=BRF-85 INTFA-CORP=BRF-85 HOLDUP-CORP=BRF-92  &
+        145            NLPOINTS=5 FLOW-MODEL=MIXED PACK-HT=5.000000000 THETA=45
+        146        PACK-RATE 1 1 5 MELLAPAK
+        147        PACK-RATE2 1
+        148        INTERNALS CS-2 STAGE1=6 STAGE2=30 INTERNAL=PACKING  &
+        149            SIZING=RATING RATE-BASE=YES P-UPDATE=NO DIAM=11.00000000  &
+        150            LIQ-FILM=DISCRXN VAP-FILM=FILM PACKTYPE=MELLAPAK  &
+        151            VENDOR=SULZER PACK-MAT=STANDARD PACK-SIZE="250Y"  &
+        152            MTRFC-CORP=BRF-85 INTFA-CORP=BRF-85 HOLDUP-CORP=BRF-92  &
+        153            NLPOINTS=5 PACK-HT=25.00000000 THETA=45
+        154        PACK-RATE 2 6 30 MELLAPAK
+        155        PACK-RATE2 2
+        156
+        157    BLOCK STRIPPER RADFRAC
+        158        SUBOBJECTS INTERNALS = CS-1
+        159        PARAM NSTAGE=20 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=25  &
+        160            DAMPING=NONE
+        161        PARAM2 STATIC-DP=YES OLD-SULZER=NO
+        162        COL-CONFIG CONDENSER=PARTIAL-V-L CA-CONFIG=INT-1
+        163        RATESEP-ENAB CALC-MODE=RIG-RATE
+        164        FEEDS RICHSOL3 2
+        165        PRODUCTS BOTTOM1 20 L / H2O 1 L / CO2 1 V
+        166        P-SPEC 1 1.000000000
+        167        COL-SPECS QN=7.39758819E+7 DP-COL=.0500000000 MASS-RDV=0.875  &
+        168            MASS-D=1.50000000E+5
+        169        REAC-STAGES 1 20 R-REG
+        170        HOLD-UP 1 20 VOL-LHLDP=.1000000000
+        171        T-EST 1 35.00000000 / 20 105.0000000
+        172        REPORT NOHYDRAULIC
+        173        INTERNALS CS-1 STAGE1=2 STAGE2=19 INTERNAL=PACKING  &
+        174            SIZING=RATING RATE-BASE=YES P-UPDATE=NO DIAM=10.00000000  &
+        175            LIQ-FILM=DISCRXN VAP-FILM=FILM PACKTYPE=MELLAPAK  &
+        176            VENDOR=SULZER PACK-MAT=STANDARD PACK-SIZE="250Y"  &
+        177            MTRFC-CORP=BRF-85 INTFA-CORP=BRF-85 HOLDUP-CORP=BRF-92  &
+        178            NLPOINTS=5 PACK-HT=20.00000000 THETA=45
+        179        PACK-RATE 1 2 19 MELLAPAK
+        180        PACK-RATE2 1
+        181        UTILITIES REB-UTIL=STEAM
+        182
+        183    BLOCK CHARGBAL CHARGEBAL
+        184
+        185    BLOCK PMUP1 PUMP
+        186        PARAM DELP=.0500000000
+        187        UTILITY UTILITY-ID=POWER
+        188
+        189    BLOCK PUMP PUMP
+        190        PARAM DELP=.0500000000
+        191        UTILITY UTILITY-ID=POWER
+        192
+        193    BLOCK PUMP2 PUMP
+        194        PARAM DELP=.0800000000
+        195        UTILITY UTILITY-ID=POWER
+        196
+        197    UTILITY POWER GENERAL
+        198        COST ELEC-PRICE=.0576000000
+        199        PARAM UTILITY-TYPE=ELECTRICITY CALCCO2=YES FACTORSOURCE= &
+        200            "US-EPA-Rule-E9-5711" FUELSOURCE="Natural_gas"  &
+        201            CO2FACTOR=2.34000000E-7
+        202
+        203    UTILITY STEAM GENERAL
+        204        DESCRIPTION  &
+        205            'Low Pressure Steam, Inlet Temp=125 C, Outlet Temp=124 C'
+        206        COST ENERGY-PRICE=7.95492000E-9
+        207        PARAM UTILITY-TYPE=STEAM TIN=125.0000000 TOUT=124.0000000  &
+        208            VFRAC=1. VFR-OUT=0. CALOPT=FLASH MIN-TAPP=10.00000000  &
+        209            CALCCO2=YES FACTORSOURCE="US-EPA-Rule-E9-5711" FUELSOURCE= &
+        210            "Natural_gas" CO2FACTOR=2.34000000E-7
+        211
+        212    EO-CONV-OPTI
+        213        DMO-PARAMS DEFAULT RESCVG=2E-06 OBJCVG=2E-06
+        214
+        215    CALCULATOR FC-H2O
+        216        DEFINE WATERMU STREAM-VAR STREAM=WATERMU SUBSTREAM=MIXED  &
+        217            VARIABLE=MOLE-FLOW UOM="kmol/hr"
+        218        DEFINE WATERIN MOLE-FLOW STREAM=FLUEGAS SUBSTREAM=MIXED  &
+        219            COMPONENT=H2O UOM="kmol/hr"
+        220        DEFINE WATEROUT MOLE-FLOW STREAM=CLEANGAS SUBSTREAM=MIXED  &
+        221            COMPONENT=H2O UOM="kmol/hr"
+        222        DEFINE WATERLOS MOLE-FLOW STREAM=CO2 SUBSTREAM=MIXED  &
+        223            COMPONENT=H2O UOM="kmol/hr"
+        224    F     WATERMU = WATEROUT + WATERLOS - WATERIN
+        225        READ-VARS WATERIN WATEROUT WATERLOS
+        226        WRITE-VARS WATERMU
+        227
+        228    CALCULATOR FC-MEA
+        229        DEFINE MEACG MOLE-FLOW STREAM=CLEANGAS SUBSTREAM=MIXED  &
+        230            COMPONENT=MEA UOM="kmol/hr"
+        231        DEFINE MEACO2 MOLE-FLOW STREAM=CO2 SUBSTREAM=MIXED  &
+        232            COMPONENT=MEA UOM="kmol/hr"
+        233        DEFINE MEAMU STREAM-VAR STREAM=MEAMU SUBSTREAM=MIXED  &
+        234            VARIABLE=MOLE-FLOW UOM="kmol/hr"
+        235    F
+        236    F     MEAMU = MEACG + MEACO2
+        237    F
+        238        READ-VARS MEACO2 MEACG
+        239        WRITE-VARS MEAMU
+        240
+        241    STREAM-REPOR MOLEFLOW
+        242
+        243    PROPERTY-REP NOPARAM-PLUS
+        244
+        245    REACTIONS R-ABS REAC-DIST
+        246        REAC-DATA 1
+        247        REAC-DATA 2
+        248        REAC-DATA 3
+        249        REAC-DATA 4
+        250        REAC-DATA 5
+        251        REAC-DATA 6 KINETIC CBASIS=MOLE-GAMMA
+        252        REAC-DATA 7 KINETIC CBASIS=MOLE-GAMMA
+        253        REAC-DATA 8 KINETIC CBASIS=MOLE-GAMMA
+        254        REAC-DATA 9 KINETIC CBASIS=MOLE-GAMMA
+        255        RATE-CON 6 PRE-EXP=1.33E+17 ACT-ENERGY=13248.99685
+        256        RATE-CON 7 PRE-EXP=6.63E+16 ACT-ENERGY=25656.10968
+        257        RATE-CON 8 PRE-EXP=3.02E+14 ACT-ENERGY=9855.808733
+        258        RATE-CON 9 PRE-EXP=5.52E+23 ACT-ENERGY=16518.00000
+        259        STOIC 1 H2O -2. / H3O+ 1. / OH- 1.
+        260        STOIC 2 HCO3- -1. / H2O -1. / CO3-2 1. / H3O+ 1.
+        261        STOIC 3 H2S -1. / H2O -1. / HS- 1. / H3O+ 1.
+        262        STOIC 4 HS- -1. / H2O -1. / S-2 1. / H3O+ 1.
+        263        STOIC 5 MEA+ -1. / H2O -1. / MEA 1. / H3O+ 1.
+        264        STOIC 6 CO2 -1. / OH- -1. / HCO3- 1.
+        265        STOIC 7 HCO3- -1. / CO2 1. / OH- 1.
+        266        STOIC 8 MEA -1. / CO2 -1. / H2O -1. / MEACOO- 1. /  &
+        267            H3O+ 1.
+        268        STOIC 9 MEACOO- -1. / H3O+ -1. / MEA 1. / CO2 1. /  &
+        269            H2O 1.
+        270        POWLAW-EXP 6 CO2 1. / OH- 1.
+        271        POWLAW-EXP 7 HCO3- 1.
+        272        POWLAW-EXP 8 MEA 1. / CO2 1. / H2O 0.
+        273        POWLAW-EXP 9 MEACOO- 1. / H3O+ 1.
+        274
+        275    REACTIONS R-REG REAC-DIST
+        276        REAC-DATA 1
+        277        REAC-DATA 2
+        278        REAC-DATA 3
+        279        REAC-DATA 4
+        280        REAC-DATA 5
+        281        REAC-DATA 6 KINETIC CBASIS=MOLE-GAMMA
+        282        REAC-DATA 7 KINETIC CBASIS=MOLE-GAMMA
+        283        REAC-DATA 8 KINETIC CBASIS=MOLE-GAMMA
+        284        REAC-DATA 9 KINETIC CBASIS=MOLE-GAMMA
+        285        RATE-CON 6 PRE-EXP=1.33E+17 ACT-ENERGY=13248.99685
+        286        RATE-CON 7 PRE-EXP=6.63E+16 ACT-ENERGY=25656.10968
+        287        RATE-CON 8 PRE-EXP=3.02E+14 ACT-ENERGY=9855.808733
+        288        RATE-CON 9 PRE-EXP=6.499E+27 ACT-ENERGY=22782.08107
+        289        STOIC 1 H2O -2. / H3O+ 1. / OH- 1.
+        290        STOIC 2 HCO3- -1. / H2O -1. / CO3-2 1. / H3O+ 1.
+        291        STOIC 3 H2S -1. / H2O -1. / HS- 1. / H3O+ 1.
+        292        STOIC 4 HS- -1. / H2O -1. / S-2 1. / H3O+ 1.
+        293        STOIC 5 MEA+ -1. / H2O -1. / MEA 1. / H3O+ 1.
+        294        STOIC 6 CO2 -1. / OH- -1. / HCO3- 1.
+        295        STOIC 7 HCO3- -1. / CO2 1. / OH- 1.
+        296        STOIC 8 MEA -1. / CO2 -1. / H2O -1. / MEACOO- 1. /  &
+        297            H3O+ 1.
+        298        STOIC 9 MEACOO- -1. / H3O+ -1. / MEA 1. / CO2 1. /  &
+        299            H2O 1.
+        300        POWLAW-EXP 6 CO2 1. / OH- 1.
+        301        POWLAW-EXP 7 HCO3- 1.
+        302        POWLAW-EXP 8 MEA 1. / CO2 1. / H2O 0.
+        303        POWLAW-EXP 9 MEACOO- 1. / H3O+ 1.
+        304    ;
+        305    ;
+        306    ;
+        307    ;
+        308    ;
+
+   SIMULATION STARTED     MODULE USED: apmain  
+   LOCATED IN:C:\Program Files\AspenTech\Aspen Plus V12.1\Engine\\xeq
