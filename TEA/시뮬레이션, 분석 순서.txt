@@ -1,0 +1,6 @@
+아스펜 시뮬레이션 
+--> 아스펜 결과를 바탕으로 공정별 TEA 수행 (.csv)
+--> 아스펜 결과+TEA 결과 통합 (Raw_XXX.xlsx) 
+--> 공정별 TEA 결과 통합(TEA_results_each.csv)
+--> Pathway 별 결과 도출 (TotalResults.csv)
+--> 아스펜, TEA, pathway 별 결과 통합 (Total_PSW.xlsx)
